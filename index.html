@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f4f2eb">
+  <title>ComicCraft — Make a little magic</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600;700&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#" aria-label="ComicCraft home">
+      <span class="brand-mark" aria-hidden="true"><span></span><span></span><span></span><span></span></span>
+      <span>comic<span class="brand-light">craft</span></span>
+    </a>
+    <div class="topbar-right">
+      <span class="save-status" id="saveStatus">SAMPLE PROJECT</span>
+      <button class="icon-button key-button" id="openSettings" type="button" aria-label="Gemini API settings" title="Gemini API settings">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15.5 7.5a5 5 0 1 0 1.4 4.9L21 16.5V20h-3.5v-2.5H15V15l-1.1-1.1a5 5 0 0 0 1.6-6.4ZM8 10.5h.01"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <main class="workspace">
+    <aside class="composer" aria-labelledby="composerTitle">
+      <div class="section-kicker"><span class="kicker-dot"></span> YOUR STORY STUDIO</div>
+      <h1 id="composerTitle">Make a little<br><span>magic.</span></h1>
+      <p class="intro">A tiny idea is all it takes. Let Gemini help you turn it into a comic worth keeping.</p>
+
+      <form id="comicForm">
+        <label class="field-label" for="idea">THE IDEA</label>
+        <textarea id="idea" rows="4" maxlength="700" placeholder="A sleepy dragon who runs a midnight bakery…" required></textarea>
+        <div class="field-meta"><span>Give us a character, a place, a twist.</span><span id="ideaCount">0 / 700</span></div>
+
+        <div class="form-row">
+          <div class="form-field">
+            <label class="field-label" for="style">ART DIRECTION</label>
+            <select id="style">
+              <option>Playful ink and watercolor</option>
+              <option>Retro Sunday newspaper</option>
+              <option>Bold graphic novel</option>
+              <option>Soft storybook illustration</option>
+              <option>Pixel art adventure</option>
+              <option>Minimalist line art</option>
+            </select>
+          </div>
+          <div class="form-field panel-count-field">
+            <label class="field-label" for="panelCount">PANELS</label>
+            <select id="panelCount">
+              <option value="3">3</option>
+              <option value="4" selected>4</option>
+              <option value="6">6</option>
+            </select>
+          </div>
+        </div>
+
+        <label class="field-label mood-label" for="mood">THE FEELING</label>
+        <div class="mood-wrap">
+          <select id="mood">
+            <option>Warm and whimsical</option>
+            <option>Funny and chaotic</option>
+            <option>Quietly adventurous</option>
+            <option>Mysterious but cozy</option>
+            <option>Brave and uplifting</option>
+          </select>
+          <span class="mood-spark" aria-hidden="true">✳</span>
+        </div>
+
+        <button class="generate-button" id="generateButton" type="submit">
+          <span class="button-label">Build my comic</span>
+          <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12h14m-6-6 6 6-6 6"/></svg>
+        </button>
+      </form>
+
+      <div class="studio-note"><span class="note-star" aria-hidden="true">✳</span><span>Story first. Make the art when it feels right.</span></div>
+      <button class="art-button" id="illustrateButton" type="button" disabled>
+        <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/></svg>
+        Illustrate all panels
+        <span class="art-cost">IMAGE MODEL</span>
+      </button>
+      <div class="left-foot"><span class="gemini-dot"></span> POWERED BY GEMINI <span class="foot-divider">/</span> YOUR KEY STAYS IN THIS SESSION</div>
+    </aside>
+
+    <section class="preview" aria-labelledby="previewHeading">
+      <div class="preview-head">
+        <div>
+          <div class="section-kicker preview-kicker">THE COMIC DESK <span class="kicker-line"></span> <span id="panelSummary">4 PANELS</span></div>
+          <h2 id="previewHeading">Your next favorite story.</h2>
+        </div>
+        <div class="preview-actions">
+          <button class="text-button" id="exportButton" type="button" title="Download comic as JSON">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3v12m-5-5 5 5 5-5M5 17v4h14v-4"/></svg>
+            <span>Export</span>
+          </button>
+          <button class="text-button" id="printButton" type="button" title="Print comic">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 8V3h10v5M7 17H4V9h16v8h-3m-10-3h10v7H7zM17 11h.01"/></svg>
+            <span>Print</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="progress-wrap" id="progressWrap" hidden>
+        <div class="progress-copy"><span id="progressText">Dreaming up your story...</span><span id="progressPercent">0%</span></div>
+        <div class="progress-track"><span id="progressBar"></span></div>
+      </div>
+      <div class="error-banner" id="errorBanner" role="alert" hidden></div>
+
+      <div class="paper" id="comicPaper" aria-live="polite"></div>
+      <div class="preview-foot"><span>MADE WITH A LITTLE HELP FROM GEMINI</span><span id="projectWordmark">COMICCRAFT Nº 001</span></div>
+    </section>
+  </main>
+
+  <dialog class="settings-dialog" id="settingsDialog" aria-labelledby="settingsTitle">
+    <form method="dialog" class="dialog-top">
+      <span class="section-kicker">ONE-TIME SETUP</span>
+      <button class="icon-button close-button" value="cancel" aria-label="Close settings" title="Close">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m18 6-12 12M6 6l12 12"/></svg>
+      </button>
+    </form>
+    <h2 id="settingsTitle">Bring your own<br><span>spark.</span></h2>
+    <p>Connect a Gemini API key to write stories and illustrate your panels. Your key is kept in this browser tab only.</p>
+    <label class="field-label" for="apiKey">GEMINI API KEY</label>
+    <div class="key-entry"><input id="apiKey" type="password" autocomplete="off" spellcheck="false" placeholder="Paste your API key"><button id="toggleKey" class="key-toggle" type="button">SHOW</button></div>
+    <label class="field-label model-label" for="textModel">STORY MODEL</label>
+    <input id="textModel" class="model-input" type="text" value="gemini-3.5-flash" spellcheck="false">
+    <label class="field-label model-label" for="imageModel">IMAGE MODEL</label>
+    <input id="imageModel" class="model-input" type="text" value="gemini-2.5-flash-image" spellcheck="false">
+    <div class="dialog-note">Get a key from <a href="https://aistudio.google.com/apikey" target="_blank" rel="noreferrer">Google AI Studio ↗</a>. Image generation may use additional quota.</div>
+    <div class="dialog-actions"><button class="remove-key" id="removeKey" type="button">Clear key</button><button class="save-key" id="saveSettings" type="button">Save settings</button></div>
+  </dialog>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+</body>
+</html>
